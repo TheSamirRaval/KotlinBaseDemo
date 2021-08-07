@@ -16,7 +16,6 @@ import com.example.demo.common.model.StatusList
 import com.example.demo.databinding.FragmentMandobkShopBinding
 import com.example.demo.ui.mandobk_shop.view.adapter.ShopStatusAdapter
 import com.example.demo.ui.mandobk_shop.viewmodel.MandoBkShopViewModel
-import timber.log.Timber
 
 
 class MandoBkShopFragment : BaseFragment() {
@@ -52,8 +51,7 @@ class MandoBkShopFragment : BaseFragment() {
         mandoBkShopViewModel =
             ViewModelProvider(
                 this,
-                BaseViewModelFactory { MandoBkShopViewModel() })
-                .get(MandoBkShopViewModel::class.java)
+                BaseViewModelFactory { MandoBkShopViewModel() }).get(MandoBkShopViewModel::class.java)
 
         setAdapter()
         setObservers()
@@ -85,7 +83,7 @@ class MandoBkShopFragment : BaseFragment() {
     private fun setObservers() {
 
         mandoBkShopViewModel.statusList.observe(viewLifecycleOwner, Observer {statusList ->
-            Timber.tag("statusList").e("-$statusList")
+            Log.e("statusList","-"+statusList)
             arrayStatusList?.clear()
             arrayStatusList?.addAll(statusList)
             shopByTypeAdapter.addItemList(arrayStatusList)

@@ -14,7 +14,6 @@ import java.util.concurrent.TimeUnit
 import javax.net.ssl.*
 
 
-@SuppressLint("StaticFieldLeak")
 object AppService {
 
     var context: Context? = null
@@ -34,50 +33,39 @@ object AppService {
     }
 
     @SuppressLint("StaticFieldLeak")
-    private fun createOkHttpClient(): OkHttpClient {
+    private fun createOkHttpClient(): OkHttpClient? {
         val interceptor = HttpLoggingInterceptor()
         interceptor.level = HttpLoggingInterceptor.Level.BODY
         return try {
             val trustAllCerts: Array<TrustManager> = arrayOf<TrustManager>(
-                object : X509TrustManager {
-                    @SuppressLint("TrustAllX509TrustManager")
-                    override fun checkClientTrusted(
-                        chain: Array<X509Certificate?>?,
-                        authType: String?
-                    ) {
+                    object : X509TrustManager {
+                        override fun checkClientTrusted(chain: Array<X509Certificate?>?, authType: String?) {}
+                        override fun checkServerTrusted(chain: Array<X509Certificate?>?, authType: String?) {}
+                        override fun getAcceptedIssuers(): Array<X509Certificate> {
+                            return arrayOf()
+                        }
                     }
-
-                    override fun checkServerTrusted(
-                        chain: Array<X509Certificate?>?,
-                        authType: String?
-                    ) {
-                    }
-
-                    override fun getAcceptedIssuers(): Array<X509Certificate> {
-                        return arrayOf()
-                    }
-                }
             )
             val sslContext = SSLContext.getInstance("SSL")
             sslContext.init(null, trustAllCerts, SecureRandom())
             OkHttpClient.Builder()
-                .sslSocketFactory(sslContext.socketFactory, trustAllCerts[0] as X509TrustManager)
-                .hostnameVerifier(HostnameVerifier { hostname: String?, session: SSLSession? -> true })
-                .addInterceptor(Interceptor { chain ->
-                    val original = chain.request()
-                    val request = original.newBuilder()
-                        .header("Content-Type", "application/json")
-                        .header("User-Agent", "Android")
-                        .method(original.method, original.body)
-                        .build()
-                    return@Interceptor chain.proceed(request)
-                })
-                .readTimeout(20, TimeUnit.SECONDS)
-                .writeTimeout(20, TimeUnit.SECONDS)
-                .connectTimeout(20, TimeUnit.SECONDS)
-                .addInterceptor(BasicAuthInterceptor("admin", "1234"))
-                .addInterceptor(interceptor)
-                .build()
+                    .sslSocketFactory(sslContext.socketFactory, trustAllCerts[0] as X509TrustManager)
+                    .hostnameVerifier(HostnameVerifier { hostname: String?, session: SSLSession? -> true })
+                    .addInterceptor(Interceptor { chain ->
+                        val original = chain.request()
+                        val request = original.newBuilder()
+                                .header("Content-Type", "application/json")
+                                .header("User-Agent", "Android")
+                                .method(original.method, original.body)
+                                .build()
+                        return@Interceptor chain.proceed(request)
+                    })
+                    .readTimeout(20, TimeUnit.SECONDS)
+                    .writeTimeout(20, TimeUnit.SECONDS)
+                    .connectTimeout(20, TimeUnit.SECONDS)
+                    .addInterceptor(BasicAuthInterceptor("admin","1234"))
+                    .addInterceptor(interceptor)
+                    .build()
         } catch (e: Exception) {
             throw RuntimeException(e)
         }

@@ -1,7 +1,6 @@
 package com.example.demo.common.helper
 
 import android.util.Log
-import timber.log.Timber
 
 /** 
  *Common class for print log disable DEBUG in case you dont want to print it. 
@@ -11,31 +10,31 @@ object Debug {
 
     fun e(tag: String, msg: String) {
         if (DEBUG) {
-            Timber.e(msg)
+            Log.e(tag, msg)
         }
     }
 
     fun i(tag: String, msg: String) {
         if (DEBUG) {
-            Timber.i(tag, msg)
+            Log.i(tag, msg)
         }
     }
 
     fun w(tag: String, msg: String) {
         if (DEBUG) {
-            Timber.w(tag, msg)
+            Log.w(tag, msg)
         }
     }
 
     fun d(tag: String, msg: String) {
         if (DEBUG) {
-            Timber.d(tag, msg)
+            Log.d(tag, msg)
         }
     }
 
     fun v(tag: String, msg: String) {
         if (DEBUG) {
-            Timber.v(tag, msg)
+            Log.v(tag, msg)
         }
     }
 }
